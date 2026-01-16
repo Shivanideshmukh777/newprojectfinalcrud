@@ -1,32 +1,9 @@
 from django.db import models
+from customer.models import Customer  # Import the Customer model
 
-# Assuming Customer is defined in the same app.
-class Customer(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=10)
-    address = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+class List(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='lists')  # ForeignKey to Customer
+    tag_name = models.CharField(max_length=100)  # Tag name for the list
 
     def __str__(self):
-        return self.name
-
-class Lead(models.Model):
-    STATUS_CHOICES = [
-        ('active', 'Active'),
-        ('inactive', 'Inactive'),
-    ]
-
-    name = models.CharField(max_length=100)
-    phone = models.CharField(max_length=15)
-    email = models.EmailField()
-    summary = models.TextField()
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='active')
-    
-    # String reference to Customer model to avoid circular import
-    customer = models.ForeignKey('Customer', related_name='leads', on_delete=models.CASCADE)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
+        return f'{self.customer.id} - {self.tag_name}'  # Display customer id and tag name
