@@ -1,11 +1,16 @@
-# inventory1/serializers.py
 from rest_framework import serializers
-from .models import Inventory
-from customer.models import Customer  # Ensure the import path is correct
+from .models import Lead, Customer  # Import both models
 
-class InventorySerializer(serializers.ModelSerializer):
-    customer_id = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all(), source='customer')
+class LeadSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=100)
+    phone = serializers.CharField(max_length=15)
+    email = serializers.EmailField()
+    summary = serializers.CharField()
+    status = serializers.ChoiceField(choices=Lead.STATUS_CHOICES)
+    customer = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all())  # Linking to Customer model
+    created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
-        model = Inventory
-        fields = ['id', 'flat', 'image_name', 'price', 'address', 'description', 'customer_id']
+        model = Lead
+        fields = ['name', 'phone', 'email', 'summary', 'status', 'customer', 'created_at']
+        read_only_fields = ['created_at']
