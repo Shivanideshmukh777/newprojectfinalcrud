@@ -1,9 +1,21 @@
 from django.db import models
-from customer.models import Customer  # Import the Customer model
+from django.contrib.auth.models import User  # For password handling
 
-class List(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='lists')  # ForeignKey to Customer
-    tag_name = models.CharField(max_length=100)  # Tag name for the list
+class Customer(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=10)
+    address = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatically sets the creation date/time
+    password = models.CharField(max_length=255)  # Storing the password hash (recommended)
+
+    def set_password(self, raw_password):
+        """Sets the password as a hashed value"""
+        self.password = make_random_password()  # You can use Django's built-in password hashers
+
+    def check_password(self, raw_password):
+        """Check if the given password matches the stored hashed password"""
+        return self.password == raw_password
 
     def __str__(self):
-        return f'{self.customer.id} - {self.tag_name}'  # Display customer id and tag name
+        return self.name
